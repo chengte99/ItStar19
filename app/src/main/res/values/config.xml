@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Api info-->
+    <string name="config_api_url">http://appctl.bckappgs.info/mob_controller/judgeUpdate.php</string>
+    <string name="config_api_version_suffix">.0</string>
+    <string name="config_app_keycode">ndbp</string>
+    <string name="config_is_dev">1</string>
+
+    <!-- Web info-->
+    <string name="default_web_url">http://www.mu1.dbp.bckbiz.info/mb/index/app</string>
+    <bool name="test_mode">false</bool>
+    <string name="test_mode_web_url">http://www.mu1.dbp.bckbiz.info/mb/index/app</string>
+    <string name="check_link_url">check_link/</string>
+</resources>
