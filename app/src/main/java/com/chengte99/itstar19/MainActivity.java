@@ -22,6 +22,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         }
         RequestBody formBody = builder.build();
 
-        String config_api_url = getString(R.string.config_api_url);
+        String config_api_url = getString(R.string.config_api_url) + "/" + AppConfig.config_api_url_path;
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(config_api_url)
@@ -143,44 +145,51 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void actionChecklink() {
-        String checkLinkURL = appConfig.getWeb_url() + getString(R.string.check_link_url);
-        Log.d(TAG, "actionChecklink: " + checkLinkURL);
+        try {
+            URL url = new URL(appConfig.getWeb_url());
+            String checkLinkURL = url.getProtocol() +
+                    "://" + url.getAuthority() +
+                    "/" + getString(R.string.check_link_url);
+            Log.d(TAG, "actionChecklink: " + checkLinkURL);
 
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(checkLinkURL)
-                .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Log.d(TAG, "onFailure: " + e.getMessage());
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                final String resStr = response.body().string();
-                Log.d(TAG, "onResponse: " + resStr);
-
-                if (resStr.equals(appConfig.getCheck_link())) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            goWeb();
-                        }
-                    });
-                }else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            new AlertDialog.Builder(MainActivity.this)
-                                    .setTitle("Connection Error")
-                                    .setMessage("Connection Failed, Please contact customer service")
-                                    .show();
-                        }
-                    });
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(checkLinkURL)
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    Log.d(TAG, "onFailure: " + e.getMessage());
                 }
-            }
-        });
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    final String resStr = response.body().string();
+                    Log.d(TAG, "onResponse: " + resStr);
+
+                    if (resStr.equals(appConfig.getCheck_link())) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                goWeb();
+                            }
+                        });
+                    }else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                new AlertDialog.Builder(MainActivity.this)
+                                        .setTitle("Connection Error")
+                                        .setMessage("Connection Failed, Please contact customer service")
+                                        .show();
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void goWeb() {

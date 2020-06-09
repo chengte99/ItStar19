@@ -14,6 +14,8 @@ public class AppConfig {
     private String isDev;
     private String check_link;
 
+    static public String config_api_url_path = "mob_controller/judgeUpdate.php";
+
     public AppConfig(JSONObject object) {
         try {
             feedback = object.getInt("feedback");
