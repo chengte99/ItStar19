@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Api info-->
-    <string name="config_api_url">https://appctl.55bckapp.com</string>
+    <!-- DEV-->
+    <string name="config_api_url">http://appctl.bckappgs.info</string>
+    <!-- PRO-->
+<!--    <string name="config_api_url">https://appctl.55bckapp.com</string>-->
     <string name="config_api_version_suffix">.0000</string>
-    <string name="config_app_keycode">ms</string>
-    <string name="config_is_dev">0</string>
+    <string name="config_app_keycode">gbb</string>
+    <string name="config_is_dev">1</string>
 
     <!-- Web info-->
-    <string name="default_web_url">https://www.ms5687.com/mb/index/app</string>
+    <string name="default_web_url">https://188spo.fbdemo.info</string>
     <bool name="test_mode">false</bool>
-    <string name="test_mode_web_url">https://www.ms5687.com/mb/index/app/</string>
+    <string name="test_mode_web_url">https://188spo.fbdemo.info</string>
     <string name="check_link_url">check_link/</string>
 </resources>
