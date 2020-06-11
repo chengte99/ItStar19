@@ -1,9 +1,13 @@
 package com.chengte99.itstar19;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Build;
@@ -12,7 +16,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.SslErrorHandler;
@@ -23,32 +27,113 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.chengte99.itstar19.model.AndroidJS;
+import com.chengte99.itstar19.databinding.ActivityWebBinding;
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
+import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
 public class WebActivity extends AppCompatActivity {
 
     private static final String TAG = WebActivity.class.getSimpleName();
     private static final String JS_INTERFACE_NAME = "SgadmkApp";
     private WebView mainWebview;
+    private WebView currentWebview;
     private TextView progressText;
+    private ActivityWebBinding binding;
+    private ConstraintLayout web_activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = ActivityWebBinding.inflate(getLayoutInflater());
         setContentView(R.layout.activity_web);
+        Log.d(TAG, "onCreate: ");
 
-        String web_url = getIntent().getStringExtra("WEB_URL");
-        Log.d(TAG, "onCreate: " + web_url);
+//        String web_url = getIntent().getStringExtra("WEB_URL");
 
-        findViewSetup();
-        backgroundSetup();
-        webviewSetup(web_url);
+//        findViewSetup();
+//        backgroundSetup();
+//        webviewSetup(web_url);
+
+//        floatingBtnSetup();
+    }
+
+    private void floatingBtnSetup() {
+        ImageView icon = new ImageView(this);
+        icon.setImageResource(android.R.drawable.alert_light_frame);
+        FloatingActionButton actionButton= new FloatingActionButton.Builder(this)
+                .setContentView(icon)
+                .build();
+
+        SubActionButton.Builder builder = new SubActionButton.Builder(this);
+        ImageView sub1 = new ImageView(this);
+        icon.setImageResource(android.R.drawable.arrow_up_float);
+        SubActionButton subBtn1 = builder.setContentView(sub1).build();
+
+        ImageView sub2 = new ImageView(this);
+        icon.setImageResource(android.R.drawable.arrow_down_float);
+        SubActionButton subBtn2 = builder.setContentView(sub2).build();
+
+        FloatingActionMenu.Builder actionMenu = new FloatingActionMenu.Builder(this);
+        FloatingActionMenu floatingMenu = actionMenu
+                .addSubActionView(subBtn1)
+                .addSubActionView(subBtn2)
+                .attachTo(actionButton)
+                .build();
+    }
+
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart: ");
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume: ");
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause: ");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop: ");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
+//        if (mainWebview != null) {
+//            mainWebview.loadDataWithBaseURL(null, "",
+//                    "text/html", "utf-8", null);
+//            mainWebview.clearHistory();
+//
+//            ((ViewGroup) mainWebview.getParent()).removeView(mainWebview);
+//            mainWebview.destroy();
+//            mainWebview = null;
+//        }
+        super.onDestroy();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        Log.d(TAG, "onConfigurationChanged: ");
+        super.onConfigurationChanged(newConfig);
     }
 
     private void backgroundSetup() {
-        progressText.setTextColor(getResources().getColorStateList(R.color.white));
+        if (getResources().getBoolean(R.bool.is_black_background)) {
+            progressText.setTextColor(getResources().getColorStateList(R.color.white));
+        }
     }
 
     private void webviewSetup(String web_url) {
@@ -57,10 +142,8 @@ public class WebActivity extends AppCompatActivity {
         }
 
         this.mainWebview.setVisibility(View.GONE);
-
         initWebview(mainWebview);
-
-        this.mainWebview.addJavascriptInterface(new AndroidJS(), JS_INTERFACE_NAME);
+        this.mainWebview.addJavascriptInterface(new AndroidJSInterface(), JS_INTERFACE_NAME);
         this.mainWebview.loadUrl(web_url);
 //        webView.loadUrl("https://188spo.fbdemo.info");
     }
@@ -71,16 +154,19 @@ public class WebActivity extends AppCompatActivity {
         webChromeClientSetup(webView);
     }
 
-    private void webChromeClientSetup(WebView webView) {
+    private void webChromeClientSetup(final WebView webView) {
         webView.setWebChromeClient(new WebChromeClient(){
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
+                Log.d(TAG, "onProgressChanged: ");
                 super.onProgressChanged(view, newProgress);
-                if (newProgress < 100) {
-                    progressText.setText("Resource loading ... " + newProgress + "%");
-                }else {
-                    progressText.setVisibility(View.GONE);
-                    view.setVisibility(View.VISIBLE);
+                if (view == mainWebview) {
+                    if (newProgress < 100) {
+                        progressText.setText("Resource loading ... " + newProgress + "%");
+                    }else {
+                        progressText.setVisibility(View.GONE);
+                        view.setVisibility(View.VISIBLE);
+                    }
                 }
             }
 
@@ -92,25 +178,42 @@ public class WebActivity extends AppCompatActivity {
 
             @Override
             public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+                Log.d(TAG, "onCreateWindow: " + view);
                 Log.d(TAG, "onCreateWindow: " + isDialog);
                 Log.d(TAG, "onCreateWindow: " + isUserGesture);
                 Log.d(TAG, "onCreateWindow: " + resultMsg);
 
-//                WebView newWebview = new WebView(WebActivity.this);
-//                mainWebview.addView(newWebview);
-//                initWebview(newWebview);
-//                WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
-//                transport.setWebView(newWebview);
-//                resultMsg.sendToTarget();
-//
-//                return true;
+                WebView newWebview = new WebView(WebActivity.this);
+                initWebview(newWebview);
+                newWebview.setId(R.id.webSecond);
 
-                return super.onCreateWindow(view, isDialog, isUserGesture, resultMsg);
+                web_activity.addView(newWebview);
+
+                ConstraintSet set = new ConstraintSet();
+                set.connect(newWebview.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM);
+                set.connect(newWebview.getId(), ConstraintSet.LEFT, ConstraintSet.PARENT_ID, ConstraintSet.LEFT);
+                set.connect(newWebview.getId(), ConstraintSet.RIGHT, ConstraintSet.PARENT_ID, ConstraintSet.RIGHT);
+                set.connect(newWebview.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
+                set.constrainHeight(newWebview.getId(), ConstraintSet.MATCH_CONSTRAINT);
+                set.constrainWidth(newWebview.getId(), ConstraintSet.MATCH_CONSTRAINT);
+                set.applyTo(web_activity);
+
+                WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+                transport.setWebView(newWebview);
+                resultMsg.sendToTarget();
+
+                return true;
+//                return super.onCreateWindow(view, isDialog, isUserGesture, resultMsg);
             }
 
             @Override
             public void onCloseWindow(WebView window) {
+                Log.d(TAG, "onCloseWindow: " + window);
                 super.onCloseWindow(window);
+                if (window != null) {
+                    web_activity.removeView(window);
+                    window.destroy();
+                }
             }
 
             @Override
@@ -181,7 +284,7 @@ public class WebActivity extends AppCompatActivity {
     }
 
     private void webClientSetup(WebView webView) {
-        mainWebview.setWebViewClient(new WebViewClient(){
+        webView.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 Log.d(TAG, "shouldOverrideUrlLoading: " + url);
@@ -252,7 +355,7 @@ public class WebActivity extends AppCompatActivity {
         //LOAD_NO_CACHE: 不使用缓存，只从网络获取数据.
         //LOAD_CACHE_ELSE_NETWORK，只要本地有，无论是否过期，或者no-cache，都使用缓存中的数据。
 
-        webSettings.setAllowFileAccess(true); //设置可以访问文件
+        webSettings.setAllowFileAccess(false); //设置可以访问文件
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true); //支持通过JS打开新窗口
         webSettings.setSupportMultipleWindows(true);
         webSettings.setLoadsImagesAutomatically(true); //支持自动加载图片
@@ -296,28 +399,15 @@ public class WebActivity extends AppCompatActivity {
     }
 
     private void findViewSetup() {
+        web_activity = findViewById(R.id.web_container);
         mainWebview = findViewById(R.id.webview_main);
         progressText = findViewById(R.id.web_progress_text);
     }
 
     @Override
-    protected void onDestroy() {
-        if (mainWebview != null) {
-            mainWebview.loadDataWithBaseURL(null, "",
-                    "text/html", "utf-8", null);
-            mainWebview.clearHistory();
-
-            ((ViewGroup) mainWebview.getParent()).removeView(mainWebview);
-            mainWebview.destroy();
-            mainWebview = null;
-        }
-        super.onDestroy();
-    }
-
-    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && mainWebview.canGoBack()) {
-            mainWebview.goBack();
+        if (keyCode == KeyEvent.KEYCODE_BACK && currentWebview.canGoBack()) {
+            currentWebview.goBack();
             return true;
         }else {
             new AlertDialog.Builder(this)
@@ -326,8 +416,18 @@ public class WebActivity extends AppCompatActivity {
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            setResult(RESULT_OK);
-                            finish();
+                            if (currentWebview == mainWebview) {
+                                if (currentWebview != null) {
+                                    web_activity.removeView(currentWebview);
+                                }
+                                setResult(RESULT_OK);
+                                finish();
+                            }else {
+                                if (currentWebview != null) {
+                                    web_activity.removeView(currentWebview);
+                                    currentWebview = mainWebview;
+                                }
+                            }
                         }
                     })
                     .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
@@ -339,5 +439,22 @@ public class WebActivity extends AppCompatActivity {
                     .show();
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    public class AndroidJSInterface extends Object {
+        @JavascriptInterface
+        public void hello(String message) {
+            Log.d(TAG, "hello: " + message);
+        }
+
+        @JavascriptInterface
+        public void postMessage(String message) {
+            Log.d(TAG, "postMessage: " + message);
+        }
+
+        @JavascriptInterface
+        public void identifyMessage(String message) {
+            Log.d(TAG, "identifyMessage: " + message);
+        }
     }
 }

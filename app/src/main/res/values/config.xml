@@ -6,7 +6,7 @@
     <!-- PRO-->
 <!--    <string name="config_api_url">https://appctl.55bckapp.com</string>-->
     <string name="config_api_version_suffix">.0000</string>
-    <string name="config_app_keycode">gbb</string>
+    <string name="config_app_keycode">xh</string>
     <string name="config_is_dev">1</string>
 
     <!-- Web info-->
@@ -14,4 +14,7 @@
     <bool name="test_mode">false</bool>
     <string name="test_mode_web_url">https://188spo.fbdemo.info</string>
     <string name="check_link_url">check_link/</string>
+
+    <!-- Background info-->
+    <bool name="is_black_background">true</bool>
 </resources>
