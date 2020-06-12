@@ -10,9 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".WebActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize">
+        <activity android:name=".FragmentActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,13 +18,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".WebActivity"
             android:configChanges="keyboardHidden|orientation|screenSize">
-        </activity>
-    </application>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
 
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+    </application>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

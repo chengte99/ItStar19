@@ -14,6 +14,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.chengte99.itstar19.model.AppConfig;
 import com.chengte99.itstar19.model.RequestParameter;
